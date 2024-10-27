@@ -1,0 +1,109 @@
+services:
+  db:
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: password 
+      POSTGRES_USER: evergreen
+    ports:
+      - 5432:5432
+    build:
+      dockerfile: Dockerfile
+      target: postgres-ils
+    networks:
+      - private
+    restart: always
+  router:
+    container_name: router
+    hostname: opensrf.router
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: router
+    depends_on:
+      - ejabberd
+    networks:
+      - private
+      - public
+  opensrf:
+    container_name: opensrf
+    hostname: services.opensrf
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: osrf-service
+    restart: always
+    depends_on:
+      router:
+        condition: service_healthy
+    networks:
+      - private
+      - public
+
+  evergreen:
+    hostname: evergreen
+    container_name: evergreen
+    ports:
+      - 8080:80
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: evergreen
+    # depends_on:
+    #   opensrf:
+    #     condition: service_healthy
+    restart: always
+    networks:
+      - private
+      - public
+  memcached:
+    container_name: memcached
+    image: memcached
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+    networks:
+      - private
+  ejabberd:
+    container_name: ejabberd
+    image: ejabberd/ecs
+    restart: always
+    environment:
+      CTL_ON_CREATE: register opensrf public.ejabberd password ;
+                      register opensrf private.ejabberd password ;
+                      register router public.ejabberd password ;
+                      register router private.ejabberd password ;
+                      status
+    networks:
+      private:
+        aliases:
+          - private.ejabberd
+      public:
+        aliases:
+          - public.ejabberd
+    healthcheck:
+      test: netstat -nl | grep -q 5222
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 120
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost"]
+    #   interval: 1m30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+    ports:
+      - 5222:5222
+      #- "5269:5269"
+      #- "5280:5280"
+      #- "5443:5443"
+    volumes:
+    - type: bind
+      source: ./config/ejabberd/ejabberd.yml
+      target: /home/ejabberd/conf/ejabberd.yml
+
+networks:
+  private:
+  public:
