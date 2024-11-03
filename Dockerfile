@@ -149,6 +149,10 @@ cp Open-ILS/examples/apache_24/eg_startup       /etc/apache2/eg_startup
 sed -i 's/export APACHE_RUN_USER=www-data/export APACHE_RUN_USER=opensrf/' /etc/apache2/envvars
 a2dismod mpm_event
 a2enmod mpm_prefork
+
+# handle remote IP address translation
+a2enmod remoteip
+
 a2dissite 000-default
 a2ensite eg.conf
 chown opensrf /var/lock/apache2
@@ -174,6 +178,11 @@ EOF
 chmod 755 /init-db.sh
 
 EOT
+
+# Workaround from 404 method not found
+# received error : service=open-ils.search : method=open-ils.search.fetch_context_library_groups.atomic : params=$VAR1 = [1];
+# Exception: OpenSRF::EX::ERROR 2024-11-03T21:51:38 OpenILS::Application::AppUtils /usr/local/share/perl/5.34.0/OpenILS/Application/AppUtils.pm:213 System ERROR: Exception: OpenSRF::DomainObject::oilsMethodException 2024-11-03T21:51:38 OpenSRF::AppRequest /usr/local/share/perl/5.34.0/OpenSRF/AppSession.pm:1171 <404>  Method [open-ils.search.fetch_context_library_groups.atomic] not found for OpenILS::Application::Search
+RUN sed -i -e '877,883d' /usr/local/share/perl/5.34.0/OpenILS/WWW/EGCatLoader/Util.pm
 
 WORKDIR /openils
 EXPOSE 80
