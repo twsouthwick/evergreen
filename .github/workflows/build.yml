@@ -34,7 +34,7 @@ jobs:
         docker buildx create --use
         docker buildx build --push --target router -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-router:${{ github.sha }} .
         docker buildx build --push --target router -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-router:latest .
-    - name: 'Build and push router image'
+    - name: 'Build and push web image'
       run: |
         docker buildx create --use
         docker buildx build --push --target evergreen -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-web:${{ github.sha }} .
