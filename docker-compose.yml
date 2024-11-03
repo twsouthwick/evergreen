@@ -88,17 +88,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 120
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost"]
-    #   interval: 1m30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 40s
     ports:
       - 5222:5222
-      #- "5269:5269"
-      #- "5280:5280"
-      #- "5443:5443"
+      - 5269:5269
+      - 5280:5280
+      - 5443:5443
     volumes:
     - type: bind
       source: ./config/ejabberd/ejabberd.yml
