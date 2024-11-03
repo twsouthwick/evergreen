@@ -112,8 +112,9 @@ sed -i -e 's/private.localhost/private.ejabberd/g' ~/.srfsh.xml
 sed -i -e 's/public.localhost/public.ejabberd/g' ~/.srfsh.xml
 EOT
 
-FROM evergreen-build AS router
+FROM opensrf-build AS router
 
+COPY --from=evergreen-build /openils/conf/opensrf_core.xml /openils/conf/opensrf_core.xml
 HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD test -f /openils/started
 
 WORKDIR /openils
