@@ -44,7 +44,7 @@ services:
     hostname: evergreen
     container_name: evergreen
     ports:
-      - 8080:80
+      - 80:80
     build:
       context: .
       dockerfile: Dockerfile
