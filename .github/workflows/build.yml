@@ -21,7 +21,7 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
     - name: 'Build images'
       run: |
-        docker compose up
+        docker compose build
     - name: 'Build and push Postgres image'
       run: |
         docker buildx create --use

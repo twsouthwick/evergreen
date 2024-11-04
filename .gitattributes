@@ -1,0 +1,8 @@
+*.pl text diff=perl
+*.pm text diff=perl
+
+*.vim text eol=lf
+.vimrc text eol=lf
+.gvimrc text eol=lf
+
+*.sh text eol=lf
