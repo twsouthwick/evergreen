@@ -142,11 +142,6 @@ ENTRYPOINT ["/start_router.sh"]
 FROM evergreen-build AS osrf-service
 
 ENV PATH="$PATH:/openils/bin"
-ENV POSTGRES_USER=evergreen
-ENV POSTGRES_DB=evergreen
-ENV POSTGRES_PASSWORD=password
-ENV POSTGRES_HOST=db
-ENV POSTGRES_PORT=5432
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=100 CMD test -f /openils/started
 
@@ -158,6 +153,8 @@ FROM evergreen-build AS evergreen
 
 WORKDIR /src/evergreen
 COPY apache.conf /etc/apache2/sites-available/eg.conf
+COPY --chmod=755 init-db.sh /init-db.sh
+COPY --chmod=755 start_httpd.sh /start_httpd.sh
 USER root
 RUN <<EOT
 cp Open-ILS/examples/apache_24/eg_vhost_24.conf /etc/apache2/eg_vhost.conf
@@ -174,31 +171,6 @@ a2dissite 000-default
 a2ensite eg.conf
 chown opensrf /var/lock/apache2
 
-cat << EOF > /start_httpd.sh
-#!/bin/sh
-
-set -eux
-
-su -m opensrf -c /init-db.sh
-su - opensrf -c /openils/bin/autogen.sh
-
-# Removing SSL for websockets
-if [ $EVERGREEN_NO_SSL ]; then
-  sed -i -e "s|'wss://'|'ws://'|g" /openils/var/web/js/dojo/opensrf/opensrf_ws.js
-fi
-
-apachectl -D "FOREGROUND" -k start
-EOF
-chmod 755 /start_httpd.sh
-
-cat << EOF > /init-db.sh
-#!/bin/sh
-set -eux
-perl /openils/bin/eg_db_config --update-config --create-offline \
-    --user $POSTGRES_USER --password $POSTGRES_PASSWORD --hostname $POSTGRES_HOST --port $POSTGRES_PORT
-EOF
-chmod 755 /init-db.sh
-
 EOT
 
 # Workaround from 404 method not found
@@ -213,10 +185,5 @@ WORKDIR /openils
 EXPOSE 80
 
 ENV PATH="$PATH:/openils/bin"
-ENV POSTGRES_USER=evergreen
-ENV POSTGRES_DB=evergreen
-ENV POSTGRES_PASSWORD=password
-ENV POSTGRES_HOST=db
-ENV POSTGRES_PORT=5432
 
 ENTRYPOINT ["/start_httpd.sh"]
