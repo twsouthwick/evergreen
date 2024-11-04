@@ -19,9 +19,6 @@ jobs:
         registry: ${{ secrets.ACR_ENDPOINT }}
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
-    - name: 'Build images'
-      run: |
-        docker compose build
     - name: 'Build and push Postgres image'
       run: |
         docker buildx create --use
