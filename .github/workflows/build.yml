@@ -19,28 +19,21 @@ jobs:
         registry: ${{ secrets.ACR_ENDPOINT }}
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
-    - name: 'Build and push Postgres image'
+    - name: 'Build and push images'
       run: |
         docker buildx create --use
+
         docker buildx build --push --target postgres-ils -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-pg:${{ github.sha }} .
         docker buildx build --push --target postgres-ils -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-pg:latest .
-    - name: 'Build and push OpenSRF image'
-      run: |
-        docker buildx create --use
+        
         docker buildx build --push --target osrf-service -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-opensrf:${{ github.sha }} .
         docker buildx build --push --target osrf-service -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-opensrf:latest .
-    - name: 'Build and push OpenSRF websocket image'
-      run: |
-        docker buildx create --use
+        
         docker buildx build --push --target opensrf-websocket -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-opensrf-ws:${{ github.sha }} .
         docker buildx build --push --target opensrf-websocket -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-opensrf-ws:latest .
-    - name: 'Build and push router image'
-      run: |
-        docker buildx create --use
+        
         docker buildx build --push --target router -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-router:${{ github.sha }} .
         docker buildx build --push --target router -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-router:latest .
-    - name: 'Build and push web image'
-      run: |
-        docker buildx create --use
+        
         docker buildx build --push --target evergreen -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-web:${{ github.sha }} .
         docker buildx build --push --target evergreen -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-web:latest .
