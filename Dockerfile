@@ -1,7 +1,7 @@
-FROM ubuntu AS downloader
+FROM ubuntu:24.04 AS downloader
 
 WORKDIR /downloads/tmp
-RUN apt update && apt-get install -y wget
+RUN apt update && apt-get install -y ca-certificates wget
 
 RUN wget https://evergreen-ils.org/downloads/Evergreen-ILS-3.14.0a.tar.gz && tar -xvf Evergreen-ILS-3.14.0a.tar.gz
 RUN mv Evergreen-ILS-3.14.0 /downloads/evergreen
@@ -22,7 +22,7 @@ apt-get remove -y make
 rm -rf /var/lib/apt/lists/*
 EOT
 
-FROM ubuntu AS opensrf-build
+FROM ubuntu:24.04 AS opensrf-build
 
 COPY --from=downloader /downloads/opensrf /src/opensrf/
 
@@ -113,7 +113,7 @@ sed -i -e 's/private.localhost/private.ejabberd/g' ~/.srfsh.xml
 sed -i -e 's/public.localhost/public.ejabberd/g' ~/.srfsh.xml
 EOT
 
-FROM ubuntu AS websocket-download
+FROM ubuntu:24.04 AS websocket-download
 
 WORKDIR /tmp
 RUN apt update && apt-get install -y wget unzip
