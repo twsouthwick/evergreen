@@ -39,7 +39,18 @@ services:
     networks:
       - private
       - public
-
+  opensrf-websocket:
+    container_name: opensrf-websocket
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: opensrf-websocket
+    restart: always
+    ports:
+      - 7682:7682
+    networks:
+      - private
+      - public
   evergreen:
     hostname: evergreen
     container_name: evergreen

@@ -8,7 +8,7 @@ echo "Initializing db - see $LOGFILE for logs"
 perl /openils/bin/eg_db_config --update-config \
        --service all --create-database --create-schema --create-offline \
        --user $POSTGRES_USER --password $POSTGRES_PASSWORD --hostname $POSTGRES_HOST --port $POSTGRES_PORT \
-       --database $POSTGRES_DB --load-all-sample > $LOGFILE
+       --database $POSTGRES_DB > $LOGFILE
 echo "Finished initializing db"
 
 scanpids(){
