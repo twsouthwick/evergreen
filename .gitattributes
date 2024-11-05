@@ -6,3 +6,5 @@
 .gvimrc text eol=lf
 
 *.sh text eol=lf
+
+Dockerfile text eol=lf

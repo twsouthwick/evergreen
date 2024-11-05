@@ -2,26 +2,6 @@
 
 set -eu
 
-wait_ejabberd(){
-	# Wait for ejabberd
-	echo "[opensrf-docker] Waiting for ejabberd private network..."
-	while ! nc -z private.ejabberd 5222; do
-		sleep 1
-	done
-	echo "[opensrf-docker] private.ejabberd found"
-
-	echo "[opensrf-docker] Waiting for ejabberd public network..."
-	while ! nc -z public.ejabberd 5222; do
-		sleep 1
-	done
-	echo "[opensrf-docker] public.ejabberd found"
-
-	echo "[opensrf-docker] giving ejabberd users 10s to get registered"
-	sleep 10
-	# Start the first process
-	echo "[opensrf-docker] starting OpenSRF services"
-}
-
 scanpids(){
 	# loop and watch pidfiles for missing processes
 	PIDFILES="$(find /openils/var/run -type f -name '*.pid')"
@@ -45,7 +25,7 @@ scanpids(){
 	done 
 }
 
-wait_ejabberd
+echo "[opensrf-docker] starting OpenSRF services"
 touch /openils/var/log/osrfsys.log
 osrf_control --start --service router
 touch /openils/started

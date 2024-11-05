@@ -2,14 +2,9 @@
 
 set -eu
 
-LOGFILE="/openils/var/log/create_db.log"
-
-echo "Initializing db - see $LOGFILE for logs"
-perl /openils/bin/eg_db_config --update-config \
-       --service all --create-database --create-schema --create-offline \
+perl /openils/bin/eg_db_config --update-config --service all \
        --user $POSTGRES_USER --password $POSTGRES_PASSWORD --hostname $POSTGRES_HOST --port $POSTGRES_PORT \
-       --database $POSTGRES_DB --admin-user $POSTGRES_USER --admin-pass $POSTGRES_PASSWORD > $LOGFILE
-echo "Finished initializing db"
+       --database $POSTGRES_DB
 
 scanpids(){
 	# loop and watch pidfiles for missing processes
@@ -35,7 +30,7 @@ scanpids(){
 }
 
 touch /openils/var/log/osrfsys.log
-osrf_control --start-services
+osrf_control --localhost --start-services
 echo "Started services"
 scanpids &
 tail -f  /openils/var/log/osrfsys.log

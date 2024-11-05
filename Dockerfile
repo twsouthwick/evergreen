@@ -14,6 +14,7 @@ FROM postgres:16 AS postgres-ils
 COPY --from=downloader /downloads/evergreen /evergreen/
 
 WORKDIR /evergreen
+
 RUN <<EOT
 set -eux
 apt update && apt-get install -y make
@@ -103,15 +104,20 @@ sed -i -e 's|<loglevel>2</loglevel>|<loglevel>4</loglevel>|g' /openils/conf/open
 
 cp /openils/conf/opensrf.xml.example /openils/conf/opensrf.xml
 sed -i -e 's/private.localhost/private.ejabberd/g' /openils/conf/opensrf.xml
-sed -i -e 's/public.localhost/public.ejabberd/g' /openils/conf/opensrf.xml
-sed -i -e "s|<localhost>|<services.opensrf>|g" /openils/conf/opensrf.xml
-sed -i -e "s|</localhost>|</services.opensrf>|g" /openils/conf/opensrf.xml 
+sed -i -e 's/public.localhost/public.ejabberd/g' /openils/conf/opensrf.xml 
 sed -i -e "s|<server>127.0.0.1:11211</server>|<server>memcached:11211</server>|g" /openils/conf/opensrf.xml
 
 cp /openils/conf/srfsh.xml.example ~/.srfsh.xml
 sed -i -e 's/private.localhost/private.ejabberd/g' ~/.srfsh.xml
 sed -i -e 's/public.localhost/public.ejabberd/g' ~/.srfsh.xml
 EOT
+
+FROM evergreen-build AS db-init
+
+COPY --chmod=755 --chown=opensrf:opensrf migrate-db.sh /init/migrate-db.sh
+
+USER opensrf
+ENTRYPOINT [ "/init/migrate-db.sh"]
 
 FROM ubuntu:24.04 AS websocket-download
 

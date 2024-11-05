@@ -25,7 +25,10 @@ jobs:
 
         docker buildx build --push --target postgres-ils -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-pg:${{ github.sha }} .
         docker buildx build --push --target postgres-ils -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-pg:latest .
-        
+
+        docker buildx build --push --target db-init -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-pg-init:${{ github.sha }} .
+        docker buildx build --push --target db-init -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-pg-init:latest .
+
         docker buildx build --push --target osrf-service -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-opensrf:${{ github.sha }} .
         docker buildx build --push --target osrf-service -t ${{ secrets.ACR_ENDPOINT }}/tws-evergreen-opensrf:latest .
         

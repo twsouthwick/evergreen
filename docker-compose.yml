@@ -10,6 +10,17 @@ services:
     networks:
       - private
     restart: always
+  db-init:
+    container_name: db-init
+    env_file: .env
+    build:
+      dockerfile: Dockerfile
+      target: db-init
+    networks:
+      - private
+    depends_on:
+      db:
+          condition: service_started
   pgadmin:
     container_name: pg_admin
     image: dpage/pgadmin4
@@ -34,7 +45,8 @@ services:
       dockerfile: Dockerfile
       target: router
     depends_on:
-      - ejabberd
+      ejabberd:
+        condition: service_healthy
     networks:
       - private
       - public
@@ -50,6 +62,8 @@ services:
     depends_on:
       router:
         condition: service_healthy
+      db-init:
+          condition: service_completed_successfully
     networks:
       - private
       - public
@@ -59,6 +73,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: opensrf-websocket
+    depends_on:
+      router:
+        condition: service_healthy
     restart: always
     ports:
       - 7682:7682
@@ -77,9 +94,11 @@ services:
     env_file: .env
     environment:
       EVERGREEN_NO_SSL: true
-    # depends_on:
-    #   opensrf:
-    #     condition: service_healthy
+    depends_on:
+      # opensrf:
+      #   condition: service_healthy
+      db-init:
+          condition: service_completed_successfully
     restart: always
     networks:
       - private
