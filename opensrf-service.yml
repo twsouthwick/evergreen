@@ -1,0 +1,17 @@
+services:
+  opensrf-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: osrf-service
+    restart: always
+    env_file: .env
+    depends_on:
+      router:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+      opensrf-settings:
+        condition: service_started
+    networks:
+      - private

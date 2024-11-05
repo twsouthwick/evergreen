@@ -1,3 +1,6 @@
+include:
+  - opensrf-services-compose.yml
+
 services:
   db:
     container_name: db
@@ -50,23 +53,6 @@ services:
     networks:
       - private
       - public
-  opensrf:
-    container_name: opensrf
-    hostname: services.opensrf
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: osrf-service
-    restart: always
-    env_file: .env
-    depends_on:
-      router:
-        condition: service_healthy
-      db-init:
-          condition: service_completed_successfully
-    networks:
-      - private
-      - public
   opensrf-websocket:
     container_name: opensrf-websocket
     build:
@@ -95,10 +81,14 @@ services:
     environment:
       EVERGREEN_NO_SSL: true
     depends_on:
-      # opensrf:
-      #   condition: service_healthy
       db-init:
           condition: service_completed_successfully
+      opensrf-settings:
+        condition: service_started
+      open-ils-cstore:
+        condition: service_started
+      open-ils-actor:
+        condition: service_started
     restart: always
     networks:
       - private

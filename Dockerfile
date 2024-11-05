@@ -149,8 +149,6 @@ FROM evergreen-build AS osrf-service
 
 ENV PATH="$PATH:/openils/bin"
 
-HEALTHCHECK --interval=10s --timeout=5s --retries=100 CMD test -f /openils/started
-
 WORKDIR /openils
 COPY --chmod=755 start_service.sh /start_service.sh
 ENTRYPOINT ["/start_service.sh"]

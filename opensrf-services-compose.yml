@@ -1,0 +1,282 @@
+services:
+  opensrf-settings:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: osrf-service
+    restart: always
+    env_file: .env
+    environment:
+      OPENSRF_SERVICE: opensrf.settings
+    depends_on:
+      router:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    networks:
+      - private
+  
+  opensrf-math:
+    container_name: opensrf-math
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: opensrf.math
+
+  opensrf-dbmath:
+    container_name: opensrf-dbmath
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: opensrf.dbmath
+
+  open-ils-acq:
+    container_name: open-ils-acq
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.acq
+
+  open-ils-booking:
+    container_name: open-ils-booking
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.booking
+
+  open-ils-cat:
+    container_name: open-ils-cat
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.cat
+
+  open-ils-supercat:
+    container_name: open-ils-supercat
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.supercat
+
+  open-ils-search:
+    container_name: open-ils-search
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.search
+
+  open-ils-circ:
+    container_name: open-ils-circ
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.circ
+
+  open-ils-actor:
+    container_name: open-ils-actor
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.actor
+
+  open-ils-auth:
+    container_name: open-ils-auth
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.auth
+
+  open-ils-auth_internal:
+    container_name: open-ils-auth_internal
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.auth_internal
+
+  open-ils-auth_proxy:
+    container_name: open-ils-auth_proxy
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.auth_proxy
+
+  open-ils-auth_mfa:
+    container_name: open-ils-auth_mfa
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.auth_mfa
+
+  open-ils-storage:
+    container_name: open-ils-storage
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.storage
+
+  open-ils-justintime:
+    container_name: open-ils-justintime
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.justintime
+
+  open-ils-cstore:
+    container_name: open-ils-cstore
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.cstore
+
+  open-ils-collections:
+    container_name: open-ils-collections
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.collections
+
+  open-ils-qstore:
+    container_name: open-ils-qstore
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.qstore
+
+  open-ils-reporter:
+    container_name: open-ils-reporter
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.reporter
+
+  open-ils-reporter-store:
+    container_name: open-ils-reporter-store
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.reporter-store
+
+  open-ils-permacrud:
+    container_name: open-ils-permacrud
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.permacrud
+
+  open-ils-pcrud:
+    container_name: open-ils-pcrud
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.pcrud
+
+  open-ils-trigger:
+    container_name: open-ils-trigger
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.trigger
+
+  open-ils-url_verify:
+    container_name: open-ils-url_verify
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.url_verify
+
+  open-ils-fielder:
+    container_name: open-ils-fielder
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.fielder
+
+  open-ils-vandelay:
+    container_name: open-ils-vandelay
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.vandelay
+
+  open-ils-serial:
+    container_name: open-ils-serial
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.serial
+
+  open-ils-hold-targeter:
+    container_name: open-ils-hold-targeter
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.hold-targeter
+
+  open-ils-ebook_api:
+    container_name: open-ils-ebook_api
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.ebook_api
+
+  open-ils-courses:
+    container_name: open-ils-courses
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.courses
+
+  open-ils-curbside:
+    container_name: open-ils-curbside
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.curbside
+
+  open-ils-geo:
+    container_name: open-ils-geo
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.geo
+
+  open-ils-sip2:
+    container_name: open-ils-sip2
+    extends:
+      file: opensrf-service.yml
+      service: opensrf-service
+    environment:
+      OPENSRF_SERVICE: open-ils.sip2
+

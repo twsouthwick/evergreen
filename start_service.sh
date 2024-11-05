@@ -30,7 +30,15 @@ scanpids(){
 }
 
 touch /openils/var/log/osrfsys.log
-osrf_control --localhost --start-services
+
+: "${OPENSRF_SERVICE:=}"
+
+if [ "$OPENSRF_SERVICE" = "" ]; then
+	osrf_control --localhost --start-services
+else
+	osrf_control --localhost --start --service $OPENSRF_SERVICE
+fi
+
 echo "Started services"
 scanpids &
 tail -f  /openils/var/log/osrfsys.log
