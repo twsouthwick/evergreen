@@ -9,6 +9,9 @@ RUN mv Evergreen-ILS-3.14.0 /downloads/evergreen
 RUN wget https://evergreen-ils.org/downloads/opensrf-3.3.2.tar.gz && tar -xvf opensrf-3.3.2.tar.gz
 RUN mv opensrf-3.3.2 /downloads/opensrf
 
+# For Email::Send bug
+RUN wget "https://raw.githubusercontent.com/evergreen-library-system/Evergreen/d354c6c477e8600e27058a562da0e0b463edb018/Open-ILS/src/extras/install/Makefile.ubuntu-noble" -O /downloads/evergreen/Open-ILS/src/extras/install/Makefile.ubuntu-noble
+
 FROM postgres:16 AS postgres-ils
 
 COPY --from=downloader /downloads/evergreen /evergreen/
@@ -151,6 +154,7 @@ ENV PATH="$PATH:/openils/bin"
 
 WORKDIR /openils
 COPY --chmod=755 start_service.sh /start_service.sh
+
 ENTRYPOINT ["/start_service.sh"]
 
 FROM evergreen-build AS evergreen
@@ -176,11 +180,6 @@ a2ensite eg.conf
 chown opensrf /var/lock/apache2
 
 EOT
-
-# Workaround from 404 method not found
-# received error : service=open-ils.search : method=open-ils.search.fetch_context_library_groups.atomic : params=$VAR1 = [1];
-# Exception: OpenSRF::EX::ERROR 2024-11-03T21:51:38 OpenILS::Application::AppUtils /usr/local/share/perl/5.34.0/OpenILS/Application/AppUtils.pm:213 System ERROR: Exception: OpenSRF::DomainObject::oilsMethodException 2024-11-03T21:51:38 OpenSRF::AppRequest /usr/local/share/perl/5.34.0/OpenSRF/AppSession.pm:1171 <404>  Method [open-ils.search.fetch_context_library_groups.atomic] not found for OpenILS::Application::Search
-RUN sed -i -e '877,883d' /usr/local/share/perl/5.38.2/OpenILS/WWW/EGCatLoader/Util.pm
 
 # Customize (mostly remove SSL stuff since we're expecting people in the docker world to use a reverse proxy)
 COPY eg_vhost.conf /etc/apache2/eg_vhost.conf
