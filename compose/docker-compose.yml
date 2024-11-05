@@ -8,7 +8,8 @@ services:
     ports:
       - 5432:5432
     build:
-      dockerfile: Dockerfile
+      dockerfile: /Dockerfile
+      context: ../build
       target: postgres-ils
     networks:
       - private
@@ -18,6 +19,7 @@ services:
     env_file: .env
     build:
       dockerfile: Dockerfile
+      context: ../build
       target: db-init
     networks:
       - private
@@ -44,20 +46,19 @@ services:
     hostname: opensrf.router
     restart: always
     build:
-      context: .
       dockerfile: Dockerfile
+      context: ../build
       target: router
     depends_on:
       ejabberd:
         condition: service_healthy
     networks:
       - private
-      - public
   opensrf-websocket:
     container_name: opensrf-websocket
     build:
-      context: .
       dockerfile: Dockerfile
+      context: ../build
       target: opensrf-websocket
     depends_on:
       router:
@@ -74,8 +75,8 @@ services:
     ports:
       - 80:80
     build:
-      context: .
       dockerfile: Dockerfile
+      context: ../build
       target: evergreen
     env_file: .env
     environment:
@@ -132,7 +133,7 @@ services:
       - 5443:5443
     volumes:
     - type: bind
-      source: ./config/ejabberd/ejabberd.yml
+      source: ../config/ejabberd/ejabberd.yml
       target: /home/ejabberd/conf/ejabberd.yml
 
 networks:

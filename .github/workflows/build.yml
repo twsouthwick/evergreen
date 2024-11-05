@@ -20,6 +20,7 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
     - name: 'Build and push images'
+      working-directory: ./build
       run: |
         docker buildx create --use
 

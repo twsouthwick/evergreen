@@ -1,8 +1,8 @@
 services:
   opensrf-service:
     build:
-      context: .
       dockerfile: Dockerfile
+      context: ../build
       target: osrf-service
     restart: always
     env_file: .env

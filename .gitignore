@@ -1,4 +1,3 @@
-!Build/
 .last_cover_stats
 /META.yml
 /META.json
@@ -15,11 +14,6 @@ nytprof.out
 
 # Dist::Zilla
 /.build/
-
-# Module::Build
-_build/
-Build
-Build.bat
 
 # Module::Install
 inc/
