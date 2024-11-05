@@ -1,5 +1,6 @@
 include:
   - opensrf-services-compose.yml
+#  - single-opensrf-services-compose.yml
 
 services:
   db:
@@ -13,7 +14,7 @@ services:
       target: postgres-ils
     networks:
       - private
-    restart: always
+    restart: unless-stopped
   db-init:
     container_name: db-init
     env_file: .env
@@ -44,7 +45,7 @@ services:
   router:
     container_name: router
     hostname: opensrf.router
-    restart: always
+    restart: unless-stopped
     build:
       dockerfile: Dockerfile
       context: ../build
@@ -54,6 +55,7 @@ services:
         condition: service_healthy
     networks:
       - private
+      - public
   opensrf-websocket:
     container_name: opensrf-websocket
     build:
@@ -63,7 +65,7 @@ services:
     depends_on:
       router:
         condition: service_healthy
-    restart: always
+    restart: unless-stopped
     ports:
       - 7682:7682
     networks:
@@ -83,14 +85,16 @@ services:
       EVERGREEN_NO_SSL: true
     depends_on:
       db-init:
-          condition: service_completed_successfully
+        condition: service_completed_successfully
+      # opensrf:
+      #   condition: service_started
       opensrf-settings:
         condition: service_started
       open-ils-cstore:
         condition: service_started
       open-ils-actor:
         condition: service_started
-    restart: always
+    restart: unless-stopped
     networks:
       - private
       - public
@@ -106,7 +110,7 @@ services:
   ejabberd:
     container_name: ejabberd
     image: ejabberd/ecs
-    restart: always
+    restart: unless-stopped
     environment:
       CTL_ON_CREATE: register opensrf public.ejabberd password ;
                       register opensrf private.ejabberd password ;

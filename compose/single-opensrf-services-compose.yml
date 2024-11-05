@@ -1,5 +1,6 @@
 services:
-  opensrf-service:
+  opensrf:
+    container_name: opensrf
     build:
       dockerfile: Dockerfile
       context: ../build
@@ -11,7 +12,6 @@ services:
         condition: service_healthy
       db-init:
         condition: service_completed_successfully
-      opensrf-settings:
-        condition: service_started
     networks:
       - private
+  
