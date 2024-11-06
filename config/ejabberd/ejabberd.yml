@@ -15,9 +15,8 @@
 ###
 
 hosts:
-  - "ejabberd"
-  - "private.ejabberd"
-  - "public.ejabberd"
+  - "private-ejabberd"
+  - "public-ejabberd"
 
 loglevel: 4
 log_rotate_size: 10485760

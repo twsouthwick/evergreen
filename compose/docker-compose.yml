@@ -1,6 +1,6 @@
 include:
-  - opensrf-services-compose.yml
-#  - single-opensrf-services-compose.yml
+#  - opensrf-services-compose.yml
+  - single-opensrf-services-compose.yml
 
 services:
   db:
@@ -86,14 +86,14 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
-      # opensrf:
+      opensrf:
+        condition: service_started
+      # opensrf-settings:
       #   condition: service_started
-      opensrf-settings:
-        condition: service_started
-      open-ils-cstore:
-        condition: service_started
-      open-ils-actor:
-        condition: service_started
+      # open-ils-cstore:
+      #   condition: service_started
+      # open-ils-actor:
+      #   condition: service_started
     restart: unless-stopped
     networks:
       - private
@@ -112,18 +112,18 @@ services:
     image: ejabberd/ecs
     restart: unless-stopped
     environment:
-      CTL_ON_CREATE: register opensrf public.ejabberd password ;
-                      register opensrf private.ejabberd password ;
-                      register router public.ejabberd password ;
-                      register router private.ejabberd password ;
+      CTL_ON_CREATE: register opensrf public-ejabberd password ;
+                      register opensrf private-ejabberd password ;
+                      register router public-ejabberd password ;
+                      register router private-ejabberd password ;
                       status
     networks:
       private:
         aliases:
-          - private.ejabberd
+          - private-ejabberd
       public:
         aliases:
-          - public.ejabberd
+          - public-ejabberd
     healthcheck:
       test: netstat -nl | grep -q 5222
       start_period: 5s

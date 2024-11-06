@@ -101,18 +101,18 @@ set -eux
 
 echo "export PATH=\"/openils/bin:$PATH\"" >> ~/.bashrc
 cp /openils/conf/opensrf_core.xml.example /openils/conf/opensrf_core.xml
-sed -i -e 's/private.localhost/private.ejabberd/g' /openils/conf/opensrf_core.xml
-sed -i -e 's/public.localhost/public.ejabberd/g' /openils/conf/opensrf_core.xml
+sed -i -e 's/private.localhost/private-ejabberd/g' /openils/conf/opensrf_core.xml
+sed -i -e 's/public.localhost/public-ejabberd/g' /openils/conf/opensrf_core.xml
 sed -i -e 's|<loglevel>2</loglevel>|<loglevel>4</loglevel>|g' /openils/conf/opensrf_core.xml
 
 cp /openils/conf/opensrf.xml.example /openils/conf/opensrf.xml
-sed -i -e 's/private.localhost/private.ejabberd/g' /openils/conf/opensrf.xml
-sed -i -e 's/public.localhost/public.ejabberd/g' /openils/conf/opensrf.xml 
+sed -i -e 's/private.localhost/private-ejabberd/g' /openils/conf/opensrf.xml
+sed -i -e 's/public.localhost/public-ejabberd/g' /openils/conf/opensrf.xml 
 sed -i -e "s|<server>127.0.0.1:11211</server>|<server>memcached:11211</server>|g" /openils/conf/opensrf.xml
 
 cp /openils/conf/srfsh.xml.example ~/.srfsh.xml
-sed -i -e 's/private.localhost/private.ejabberd/g' ~/.srfsh.xml
-sed -i -e 's/public.localhost/public.ejabberd/g' ~/.srfsh.xml
+sed -i -e 's/private.localhost/private-ejabberd/g' ~/.srfsh.xml
+sed -i -e 's/public.localhost/public-ejabberd/g' ~/.srfsh.xml
 EOT
 
 FROM evergreen-build AS db-init
