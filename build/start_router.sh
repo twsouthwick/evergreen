@@ -2,6 +2,8 @@
 
 set -eu
 
+export PATH="$PATH:/openils/bin"
+
 scanpids(){
 	# loop and watch pidfiles for missing processes
 	PIDFILES="$(find /openils/var/run -type f -name '*.pid')"

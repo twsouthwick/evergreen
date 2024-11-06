@@ -122,6 +122,25 @@ COPY --chmod=755 --chown=opensrf:opensrf migrate-db.sh /init/migrate-db.sh
 USER opensrf
 ENTRYPOINT [ "/init/migrate-db.sh"]
 
+FROM ubuntu:24.04 AS opensrf-runtime
+
+RUN <<EOT
+set -eux
+
+useradd -m -s /bin/bash opensrf
+
+echo /openils/lib > /etc/ld.so.conf.d/opensrf.conf
+ldconfig
+
+apt update && apt-get install -y ejabberd libmemcached11 libxml2
+rm -rf /var/lib/apt/lists/
+EOT
+
+COPY --chown=opensrf:opensrf --from=opensrf-build /openils /openils
+COPY --chown=opensrf:opensrf --from=evergreen-build /openils/conf/opensrf_core.xml /openils/conf/opensrf_core.xml
+
+USER opensrf
+
 FROM ubuntu:24.04 AS websocket-download
 
 WORKDIR /tmp
@@ -129,12 +148,9 @@ RUN apt update && apt-get install -y wget unzip
 RUN wget 'https://github.com/joewalnes/websocketd/releases/download/v0.3.0/websocketd-0.3.0-linux_amd64.zip'
 RUN unzip websocketd-0.3.0-linux_amd64.zip
 
-FROM opensrf-build AS opensrf-websocket
+FROM opensrf-runtime AS opensrf-websocket
 
 COPY --from=websocket-download /tmp/websocketd /usr/local/bin/websocketd
-COPY --from=opensrf-build /openils/bin/osrf-websocket-stdio /openils/bin/osrf-websocket-stdio 
-
-COPY --from=evergreen-build /openils/conf/opensrf_core.xml /openils/conf/opensrf_core.xml
 
 EXPOSE 7682
 ENTRYPOINT ["/usr/local/bin/websocketd", "--port", "7682", "/openils/bin/osrf-websocket-stdio"]
