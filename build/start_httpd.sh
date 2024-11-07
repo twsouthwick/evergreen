@@ -6,6 +6,7 @@ su -m opensrf -c /init-db.sh
 su - opensrf -c /openils/bin/autogen.sh
 
 find . -type f -name "*.tt2" -exec sed -i -e 's/\[\% ctx\.media_prefix \%\]//g' {} \;
+find . -type f -name "*.tt2" -exec sed -i -e 's/\[\% WEB_BUILD_PATH \%\]//g' {} \;
 
 : "${EVERGREEN_NO_SSL:=}"
 
