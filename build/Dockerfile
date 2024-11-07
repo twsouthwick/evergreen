@@ -188,6 +188,7 @@ USER root
 RUN <<EOT
 cp Open-ILS/examples/apache_24/eg_startup       /etc/apache2/eg_startup
 
+sed -i "s/\$r->dir_config('OILSWebMediaPrefix') || \$ctx->{hostname}/''/" /usr/local/share/perl/5.38.2/OpenILS/WWW/EGWeb.pm
 sed -i 's/export APACHE_RUN_USER=www-data/export APACHE_RUN_USER=opensrf/' /etc/apache2/envvars
 
 a2dismod mpm_event
