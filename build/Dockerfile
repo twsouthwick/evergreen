@@ -181,12 +181,13 @@ WORKDIR /src/evergreen
 COPY apache.conf /etc/apache2/sites-available/eg.conf
 COPY --chmod=755 init-db.sh /init-db.sh
 COPY --chmod=755 start_httpd.sh /start_httpd.sh
+# Customize (mostly remove SSL stuff since we're expecting people in the docker world to use a reverse proxy)
+COPY eg_vhost.conf /etc/apache2/eg_vhost.conf
+
 USER root
 RUN <<EOT
-cp Open-ILS/examples/apache_24/eg_vhost_24.conf /etc/apache2/eg_vhost.conf
 cp Open-ILS/examples/apache_24/eg_startup       /etc/apache2/eg_startup
 
-sed -i -e 's|#PerlSetVar OILSWebMediaPrefix "/media"|PerlSetVar OILSWebMediaPrefix "/"|g' /etc/apache2/eg_vhost.conf
 sed -i 's/export APACHE_RUN_USER=www-data/export APACHE_RUN_USER=opensrf/' /etc/apache2/envvars
 
 a2dismod mpm_event
@@ -201,9 +202,6 @@ a2ensite eg.conf
 chown opensrf /var/lock/apache2
 
 EOT
-
-# Customize (mostly remove SSL stuff since we're expecting people in the docker world to use a reverse proxy)
-COPY eg_vhost.conf /etc/apache2/eg_vhost.conf
 
 WORKDIR /openils
 EXPOSE 80
