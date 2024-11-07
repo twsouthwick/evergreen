@@ -186,7 +186,9 @@ RUN <<EOT
 cp Open-ILS/examples/apache_24/eg_vhost_24.conf /etc/apache2/eg_vhost.conf
 cp Open-ILS/examples/apache_24/eg_startup       /etc/apache2/eg_startup
 
+sed -i -e 's|#PerlSetVar OILSWebMediaPrefix "/media"|PerlSetVar OILSWebMediaPrefix ""|g' /etc/apache2/eg_vhost.conf
 sed -i 's/export APACHE_RUN_USER=www-data/export APACHE_RUN_USER=opensrf/' /etc/apache2/envvars
+
 a2dismod mpm_event
 a2enmod mpm_prefork
 a2enmod mod_remoteip
