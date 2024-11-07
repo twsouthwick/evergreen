@@ -1,16 +1,17 @@
 FROM ubuntu:24.04 AS downloader
 
 WORKDIR /downloads/tmp
-RUN apt update && apt-get install -y ca-certificates wget
 
-RUN wget https://evergreen-ils.org/downloads/Evergreen-ILS-3.14.0a.tar.gz && tar -xvf Evergreen-ILS-3.14.0a.tar.gz
+COPY data/ .
+
+RUN tar -xvf Evergreen-ILS-3.14.0a.tar.gz
 RUN mv Evergreen-ILS-3.14.0 /downloads/evergreen
 
-RUN wget https://evergreen-ils.org/downloads/opensrf-3.3.2.tar.gz && tar -xvf opensrf-3.3.2.tar.gz
+RUN tar -xvf opensrf-3.3.2.tar.gz
 RUN mv opensrf-3.3.2 /downloads/opensrf
 
 # For Email::Send bug
-RUN wget "https://raw.githubusercontent.com/evergreen-library-system/Evergreen/d354c6c477e8600e27058a562da0e0b463edb018/Open-ILS/src/extras/install/Makefile.ubuntu-noble" -O /downloads/evergreen/Open-ILS/src/extras/install/Makefile.ubuntu-noble
+RUN mv Makefile.ubuntu-noble /downloads/evergreen/Open-ILS/src/extras/install/Makefile.ubuntu-noble
 
 FROM postgres:16 AS postgres-ils
 
