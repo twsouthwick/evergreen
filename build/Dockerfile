@@ -4,7 +4,7 @@ WORKDIR /downloads/tmp
 
 COPY data/ .
 
-RUN apt update && apt-install -y tar
+RUN apt update && apt-get install -y tar
 RUN tar -xvf Evergreen-ILS-3.14.0a.tar.gz
 RUN mv Evergreen-ILS-3.14.0 /downloads/evergreen
 
