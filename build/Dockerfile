@@ -6,13 +6,13 @@ COPY data/ .
 
 RUN apt update && apt-get install -y tar
 RUN tar -xvf Evergreen-ILS-3.14.0a.tar.gz
+
+# For Email::Send bug
 RUN mv Evergreen-ILS-3.14.0 /downloads/evergreen
+RUN mv Makefile.ubuntu-noble /downloads/evergreen/Open-ILS/src/extras/install/Makefile.ubuntu-noble
 
 RUN tar -xvf opensrf-3.3.2.tar.gz
 RUN mv opensrf-3.3.2 /downloads/opensrf
-
-# For Email::Send bug
-RUN mv Makefile.ubuntu-noble /downloads/evergreen/Open-ILS/src/extras/install/Makefile.ubuntu-noble
 
 FROM postgres:16 AS postgres-ils
 
