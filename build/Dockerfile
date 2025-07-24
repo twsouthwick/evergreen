@@ -2,17 +2,19 @@ FROM ubuntu:24.04 AS downloader
 
 WORKDIR /downloads/tmp
 
-COPY data/ .
+RUN apt update && apt-get install -y tar wget
 
-RUN apt update && apt-get install -y tar
-RUN tar -xvf Evergreen-ILS-3.14.0a.tar.gz
+RUN <<EOT
+wget https://evergreen-ils.org/downloads/Evergreen-ILS-3.15.3.tar.gz
+tar -xvf Evergreen-ILS-3.15.3.tar.gz
+mv Evergreen-ILS-3.15.3 /downloads/evergreen
+EOT
 
-# For Email::Send bug
-RUN mv Evergreen-ILS-3.14.0 /downloads/evergreen
-RUN mv Makefile.ubuntu-noble /downloads/evergreen/Open-ILS/src/extras/install/Makefile.ubuntu-noble
-
-RUN tar -xvf opensrf-3.3.2.tar.gz
-RUN mv opensrf-3.3.2 /downloads/opensrf
+RUN <<EOT
+wget https://evergreen-ils.org/downloads/opensrf-3.3.2.tar.gz
+tar -xvf opensrf-3.3.2.tar.gz
+mv opensrf-3.3.2 /downloads/opensrf
+EOT
 
 FROM postgres:16 AS postgres-ils
 

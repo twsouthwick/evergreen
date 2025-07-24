@@ -27,21 +27,21 @@ services:
     depends_on:
       db:
           condition: service_started
-  pgadmin:
-    container_name: pg_admin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin@mycomp.com
-      PGADMIN_DEFAULT_PASSWORD: secret
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-      PGADMIN_LISTEN_PORT: 80
-    ports:
-      - 5050:80
-    networks:
-      - private
-      - public
-    depends_on:
-      - db
+  # pgadmin:
+  #   container_name: pg_admin
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: pgadmin@mycomp.com
+  #     PGADMIN_DEFAULT_PASSWORD: secret
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #     PGADMIN_LISTEN_PORT: 80
+  #   ports:
+  #     - 5050:80
+  #   networks:
+  #     - private
+  #     - public
+  #   depends_on:
+  #     - db
   router:
     container_name: router
     hostname: opensrf.router
