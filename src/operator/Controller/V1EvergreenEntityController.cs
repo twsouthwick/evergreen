@@ -86,7 +86,7 @@ public class V1EvergreenEntityController(IKubernetesClient client, ILogger<V1Eve
                 Kind = "Service",
                 Metadata = new()
                 {
-                    Name = $"{entity.Metadata.Name}-{image.ServiceName}",
+                    Name = $"{image.ServiceName}",
                     NamespaceProperty = entity.Metadata.NamespaceProperty,
                     Annotations = new Dictionary<string, string>
                     {
