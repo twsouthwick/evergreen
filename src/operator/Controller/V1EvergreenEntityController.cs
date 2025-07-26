@@ -16,11 +16,14 @@ public class V1EvergreenEntityController(IKubernetesClient client, ILogger<V1Eve
 {
     public async Task ReconcileAsync(V1EvergreenEntity entity, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Reconciling entity {Entity}.", entity);
+
         var images = new Images();
 
         foreach (var image in images)
         {
-            logger.LogInformation("Buildi deployment for image {Image} of entity {Entity}.", image.Tag, entity);
+            logger.LogInformation("Adding {Image}:{Tag} deployment/service for {EntityName}/{EntityNamespace}.", image.Repository, image.Tag, entity.Name(), entity.Namespace());
+
             var deployment = new V1Deployment()
             {
                 ApiVersion = "apps/v1",
@@ -75,15 +78,49 @@ public class V1EvergreenEntityController(IKubernetesClient client, ILogger<V1Eve
 
             deployment.AddOwnerReference(entity.MakeOwnerReference());
 
-
-
             var result = await client.CreateAsync(deployment, cancellationToken);
 
-            logger.LogInformation("Creating deployment {Deployment} for entity {Entity}",
-                result.Metadata.Name, entity);
+            var service = new V1Service()
+            {
+                ApiVersion = "v1",
+                Kind = "Service",
+                Metadata = new()
+                {
+                    Name = $"{entity.Metadata.Name}-{image.ServiceName}",
+                    NamespaceProperty = entity.Metadata.NamespaceProperty,
+                    Annotations = new Dictionary<string, string>
+                    {
+                       { $"{entity.ApiGroup()}/service", image.ServiceName}
+                    }
+                },
+                Spec = new()
+                {
+                    Selector = new Dictionary<string, string>
+                    {
+                        { $"{entity.ApiGroup()}/service", image.ServiceName }
+                    },
+                    Ports = new List<V1ServicePort>
+                    {
+                        new()
+                        {
+                            Port = 80,
+                            TargetPort = 80,
+                            Protocol = "TCP",
+                            Name = "http"
+                        }
+                    },
+                    Type = "ClusterIP"
+                }
+            };
+
+            service.AddOwnerReference(entity.MakeOwnerReference());
+
+            await client.CreateAsync(service, cancellationToken);
+
+            logger.LogInformation("Created {Image}:{Tag} deployment/service for {EntityName}/{EntityNamespace}.", image.Repository, image.Tag, entity.Name(), entity.Namespace());
         }
 
-        logger.LogInformation("Reconciling entity {Entity}.", entity);
+        logger.LogInformation("Reconciled entity {Entity}.", entity);
     }
 
     public Task DeletedAsync(V1EvergreenEntity entity, CancellationToken cancellationToken)
