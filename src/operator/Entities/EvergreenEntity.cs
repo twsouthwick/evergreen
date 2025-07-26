@@ -1,5 +1,6 @@
 ﻿using k8s.Models;
 using KubeOps.Abstractions.Entities;
+using System.Collections;
 
 namespace EvergreenOperator.Entities;
 
@@ -10,15 +11,10 @@ public partial class V1EvergreenEntity : CustomKubernetesEntity<V1EvergreenEntit
 
     public class EntitySpec
     {
-        public Images Images { get; set; } = new Images();
-
-        public EvergreenDatabase Database { get; set; } = new EvergreenDatabase();
-
-        public EvergreenService[] Services { get; set; } = [];
     }
 }
 
-public class Images
+public class Images : IEnumerable<Image>
 {
     public Image Ejabberd { get; set; } = new Image
     {
@@ -35,6 +31,14 @@ public class Images
         PullPolicy = "IfNotPresent",
         ServiceName = "memcached",
     };
+
+    public IEnumerator<Image> GetEnumerator()
+    {
+        yield return Ejabberd;
+        yield return Memcached;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
 public class Image

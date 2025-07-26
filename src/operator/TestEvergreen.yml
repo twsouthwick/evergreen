@@ -1,0 +1,10 @@
+﻿apiVersion: v1
+kind: Namespace
+metadata:
+  name: library
+---
+apiVersion: evergreen-ils.org/v1
+kind: evergreen
+metadata:
+  namespace: library
+  name: example-evergreen
