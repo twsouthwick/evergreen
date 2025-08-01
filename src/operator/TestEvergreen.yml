@@ -3,6 +3,17 @@ kind: Namespace
 metadata:
   name: library
 ---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: db
+  namespace: library
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 1Gi
+---
 apiVersion: evergreen-ils.org/v1
 kind: evergreen
 metadata:

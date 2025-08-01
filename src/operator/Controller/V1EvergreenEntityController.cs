@@ -11,6 +11,7 @@ namespace EvergreenOperator.Controller;
 
 [EntityRbac(typeof(V1EvergreenEntity), Verbs = RbacVerb.All)]
 [EntityRbac(typeof(V1Deployment), Verbs = RbacVerb.All)]
+[EntityRbac(typeof(V1Service), Verbs = RbacVerb.All)]
 public class V1EvergreenEntityController(IKubernetesClient client, ILogger<V1EvergreenEntityController> logger)
     : IEntityController<V1EvergreenEntity>
 {
@@ -99,16 +100,13 @@ public class V1EvergreenEntityController(IKubernetesClient client, ILogger<V1Eve
                     {
                         { $"{entity.ApiGroup()}/service", image.ServiceName }
                     },
-                    Ports = new List<V1ServicePort>
+                    Ports = [.. image.Ports.Select(p=>new V1ServicePort
                     {
-                        new()
-                        {
-                            Port = 80,
-                            TargetPort = 80,
-                            Protocol = "TCP",
-                            Name = "http"
-                        }
-                    },
+                        Port = p.Port,
+                        TargetPort = p.Port,
+                        Protocol = "TCP",
+                        Name = p.Name,
+                    })],
                     Type = "ClusterIP"
                 }
             };

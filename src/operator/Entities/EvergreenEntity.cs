@@ -22,6 +22,12 @@ public class Images : IEnumerable<Image>
         Tag = "25.07",
         PullPolicy = "IfNotPresent",
         ServiceName = "ejabberd",
+        Ports = [
+            new("c2s", 5222),
+            new("s2s", 5269),
+            new("http", 5280),
+            new("https", 5443)
+            ]
     };
 
     public Image Memcached { get; set; } = new Image
@@ -30,6 +36,7 @@ public class Images : IEnumerable<Image>
         Tag = "1.6.38",
         PullPolicy = "IfNotPresent",
         ServiceName = "memcached",
+        Ports = [new("tcp", 11211)]
     };
 
     public IEnumerator<Image> GetEnumerator()
@@ -48,11 +55,15 @@ public class Image
     public required string Tag { get; init; } = "latest";
     public required string PullPolicy { get; init; } = "IfNotPresent";
     public required string ServiceName { get; init; }
+    public ServicePort[] Ports { get; init; } = [];
+
     public override string ToString()
     {
         return $"{Repository}:{Tag}";
     }
 }
+
+public record ServicePort(string Name, int Port);
 
 public class EvergreenService
 {

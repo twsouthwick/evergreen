@@ -18,6 +18,12 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - services
+  verbs:
+  - '*'
+- apiGroups:
+  - ""
+  resources:
   - events
   verbs:
   - get
@@ -40,6 +46,14 @@ rules:
   - apps
   resources:
   - deployments/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - services/status
   verbs:
   - get
   - update
