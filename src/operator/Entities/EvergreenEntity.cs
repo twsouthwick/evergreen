@@ -51,6 +51,12 @@ public class Images : IEnumerable<Image>
         Services = [new("opensrf-websocket") { Ports = [new("http", 7682)] }]
     };
 
+    public Image Evergreen { get; } = new Image("evergreen")
+    {
+        Repository = "evergreen",
+        Services = [new("http") { Ports = [new("http", 80)] }]
+    };
+
     public Image Memcached { get; set; } = new Image("memcached")
     {
         Repository = "memcached",
@@ -64,6 +70,7 @@ public class Images : IEnumerable<Image>
         yield return Memcached;
         yield return OpenSrfRouter;
         yield return OpenSrfWebSocket;
+        yield return Evergreen;
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
