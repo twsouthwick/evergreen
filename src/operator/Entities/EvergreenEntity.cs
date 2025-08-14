@@ -45,7 +45,7 @@ public class Images : IEnumerable<Image>
         Repository = "opensrf-router"
     };
 
-    public Image OpenSrfWebSocket { get; } = new Image("opensrf-websocker")
+    public Image OpenSrfWebSocket { get; } = new Image("opensrf-websocket")
     {
         Repository = "opensrf-websocket",
         Services = [new("opensrf-websocket") { Ports = [new("http", 7682)] }]
