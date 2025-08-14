@@ -6,7 +6,7 @@ namespace EvergreenOperator.Controller;
 
 public static class ControllerExtensions
 {
-    public static V1Service CreateService(this V1EvergreenEntity entity, Image image)
+    public static V1Service CreateService(this V1EvergreenEntity entity, Service image)
     {
         var service = new V1Service()
         {
@@ -14,18 +14,18 @@ public static class ControllerExtensions
             Kind = "Service",
             Metadata = new()
             {
-                Name = $"{image.ServiceName}",
+                Name = $"{image.Name}",
                 NamespaceProperty = entity.Metadata.NamespaceProperty,
                 Annotations = new Dictionary<string, string>
                     {
-                       { $"{entity.ApiGroup()}/service", image.ServiceName}
+                       { $"{entity.ApiGroup()}/service", image.Name}
                     }
             },
             Spec = new()
             {
                 Selector = new Dictionary<string, string>
                     {
-                        { $"{entity.ApiGroup()}/service", image.ServiceName }
+                        { $"{entity.ApiGroup()}/service", image.Name }
                     },
                 Ports = [.. image.Ports.Select(p=>new V1ServicePort
                     {
@@ -51,11 +51,11 @@ public static class ControllerExtensions
             Kind = "Deployment",
             Metadata = new()
             {
-                Name = $"{entity.Metadata.Name}-{image.ServiceName}",
+                Name = $"{entity.Metadata.Name}-{image.Name}",
                 NamespaceProperty = entity.Metadata.NamespaceProperty,
                 Annotations = new Dictionary<string, string>
                 {
-                    { $"{entity.ApiGroup()}/service", image.ServiceName }
+                    { $"{entity.ApiGroup()}/service", image.Name }
                 }
             },
             Spec = new()
@@ -64,7 +64,7 @@ public static class ControllerExtensions
                 {
                     MatchLabels = new Dictionary<string, string>
                     {
-                        { $"{entity.ApiGroup()}/service", image.ServiceName }
+                        { $"{entity.ApiGroup()}/service", image.Name }
                     }
                 },
                 Replicas = 1,
@@ -72,11 +72,11 @@ public static class ControllerExtensions
                 {
                     Metadata = new()
                     {
-                        Name = $"{entity.Metadata.Name}-{image.ServiceName}",
+                        Name = $"{entity.Metadata.Name}-{image.Name}",
                         NamespaceProperty = entity.Metadata.NamespaceProperty,
                         Labels = new Dictionary<string, string>
                         {
-                            { $"{entity.ApiGroup()}/service", image.ServiceName },
+                            { $"{entity.ApiGroup()}/service", image.Name },
                             { "evergreen", entity.Metadata.Name }
                         }
                     },
@@ -86,7 +86,7 @@ public static class ControllerExtensions
                         {
                             new()
                             {
-                                Name = image.ServiceName,
+                                Name = image.Name,
                                 Image = $"{image.Repository}:{image.Tag}",
                                 ImagePullPolicy = image.PullPolicy,
                             }

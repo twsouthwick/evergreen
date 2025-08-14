@@ -16,51 +16,75 @@ public partial class V1EvergreenEntity : CustomKubernetesEntity<V1EvergreenEntit
 
 public class Images : IEnumerable<Image>
 {
-    public Image Ejabberd { get; set; } = new Image
+    public Image Ejabberd { get; set; } = new Image("ejabberd")
     {
         Repository = "ejabberd/ecs",
         Tag = "25.07",
-        PullPolicy = "IfNotPresent",
-        ServiceName = "ejabberd",
-        Ports = [
-            new("c2s", 5222),
-            new("s2s", 5269),
-            new("http", 5280),
-            new("https", 5443)
+        Services = [
+            new("ejabberd-private"){
+                Ports = [
+                    new("c2s", 5222),
+                    new("s2s", 5269),
+                    new("http", 5280),
+                    new("https", 5443)
+                    ]
+            },
+            new("ejabberd-public"){
+                Ports = [
+                    new("c2s", 5222),
+                    new("s2s", 5269),
+                    new("http", 5280),
+                    new("https", 5443)
+                    ]
+            }
             ]
     };
 
-    public Image Memcached { get; set; } = new Image
+    public Image OpenSrfRouter { get; } = new Image("opensrf-router")
+    {
+        Repository = "opensrf-router"
+    };
+
+    public Image OpenSrfWebSocket { get; } = new Image("opensrf-websocker")
+    {
+        Repository = "opensrf-websocket",
+        Services = [new("opensrf-websocket") { Ports = [new("http", 7682)] }]
+    };
+
+    public Image Memcached { get; set; } = new Image("memcached")
     {
         Repository = "memcached",
         Tag = "1.6.38",
-        PullPolicy = "IfNotPresent",
-        ServiceName = "memcached",
-        Ports = [new("tcp", 11211)]
+        Services = [new("memcached") { Ports = [new("tcp", 11211)] }]
     };
 
     public IEnumerator<Image> GetEnumerator()
     {
         yield return Ejabberd;
         yield return Memcached;
+        yield return OpenSrfRouter;
+        yield return OpenSrfWebSocket;
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public class Image
+public record Image(string Name)
 {
-    public bool IsManaged { get; init; } = true;
-    public required string Repository { get; init; } = string.Empty;
-    public required string Tag { get; init; } = "latest";
-    public required string PullPolicy { get; init; } = "IfNotPresent";
-    public required string ServiceName { get; init; }
-    public ServicePort[] Ports { get; init; } = [];
+    public required string Repository { get; init; }
+    public string Tag { get; init; } = "latest";
+    public string PullPolicy { get; init; } = "IfNotPresent";
+    public Service[] Services { get; init; } = [];
 
     public override string ToString()
     {
         return $"{Repository}:{Tag}";
     }
+}
+
+public record Service(string Name)
+{
+    public ServicePort[] Ports { get; init; } = [];
 }
 
 public record ServicePort(string Name, int Port);
