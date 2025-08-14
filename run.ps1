@@ -23,5 +23,7 @@ pushd $r
 docker build -t evergreen-operator .
 popd
 
+kubectl delete -f $r/src/operator/TestEvergreen.yml
+kubectl delete deployment -n evergreen-system evergreen-operator
 kubectl apply -k $r/k8s
 kubectl apply -f $r/src/operator/TestEvergreen.yml
