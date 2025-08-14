@@ -22,8 +22,8 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         image: operator
-        name: operator
         imagePullPolicy: IfNotPresent
+        name: operator
         resources:
           limits:
             cpu: 100m
