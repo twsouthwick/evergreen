@@ -1,0 +1,17 @@
+global:
+  imageRegistry: ""
+
+postgresql:
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: standard
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: localhost
+      paths:
+        - path: /
+          pathType: Prefix

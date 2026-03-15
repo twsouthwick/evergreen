@@ -1,0 +1,15 @@
+Evergreen ILS has been deployed.
+
+{{- if .Values.ingress.enabled }}
+Access the application at:
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+{{- else }}
+Get the application URL by running:
+  kubectl port-forward svc/{{ include "evergreen.fullname" . }}-web {{ .Values.web.service.port }}:{{ .Values.web.service.port }}
+  kubectl port-forward svc/{{ include "evergreen.fullname" . }}-websocket {{ .Values.websocket.service.port }}:{{ .Values.websocket.service.port }}
+{{- end }}
+
+NOTE: The db-init job runs on initial install to create the database schema.
+      It may take several minutes to complete.

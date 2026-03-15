@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "evergreen.fullname" . }}-db-init
+  labels:
+    {{- include "evergreen.labels" . | nindent 4 }}
+    app.kubernetes.io/component: db-init
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        {{- include "evergreen.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: db-init
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: OnFailure
+      initContainers:
+        {{- include "evergreen.waitForDb" . | nindent 8 }}
+      containers:
+        - name: db-init
+          image: {{ include "evergreen.image" (dict "global" .Values.global "image" .Values.dbInit.image) }}
+          imagePullPolicy: {{ .Values.dbInit.image.pullPolicy }}
+          env:
+            {{- include "evergreen.dbEnv" . | nindent 12 }}
+            - name: POSTGRES_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "evergreen.fullname" . }}-db
+                  key: admin-username
+            - name: POSTGRES_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "evergreen.fullname" . }}-db
+                  key: admin-password

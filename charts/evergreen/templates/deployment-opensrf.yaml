@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "evergreen.fullname" . }}-opensrf
+  labels:
+    {{- include "evergreen.labels" . | nindent 4 }}
+    app.kubernetes.io/component: opensrf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "evergreen.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: opensrf
+  template:
+    metadata:
+      labels:
+        {{- include "evergreen.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: opensrf
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- include "evergreen.waitForEjabberd" . | nindent 8 }}
+      containers:
+        - name: opensrf
+          image: {{ include "evergreen.image" (dict "global" .Values.global "image" .Values.opensrf.image) }}
+          imagePullPolicy: {{ .Values.opensrf.image.pullPolicy }}
+          env:
+            {{- include "evergreen.dbEnv" . | nindent 12 }}
+          {{- with .Values.opensrf.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

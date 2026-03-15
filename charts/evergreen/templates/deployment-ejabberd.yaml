@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "evergreen.fullname" . }}-ejabberd
+  labels:
+    {{- include "evergreen.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ejabberd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "evergreen.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ejabberd
+  template:
+    metadata:
+      labels:
+        {{- include "evergreen.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: ejabberd
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: ejabberd
+          image: {{ include "evergreen.image" (dict "global" .Values.global "image" .Values.ejabberd.image) }}
+          imagePullPolicy: {{ .Values.ejabberd.image.pullPolicy }}
+          env:
+            - name: CTL_ON_CREATE
+              value: >-
+                register opensrf public-ejabberd {{ .Values.auth.ejabberdPassword }} ;
+                register opensrf private-ejabberd {{ .Values.auth.ejabberdPassword }} ;
+                register router public-ejabberd {{ .Values.auth.ejabberdPassword }} ;
+                register router private-ejabberd {{ .Values.auth.ejabberdPassword }} ;
+                status
+          ports:
+            - containerPort: 5222
+              protocol: TCP
+            - containerPort: 5269
+              protocol: TCP
+            - containerPort: 5280
+              protocol: TCP
+            - containerPort: 5443
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 5222
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: config
+              mountPath: /home/ejabberd/conf/ejabberd.yml
+              subPath: ejabberd.yml
+          {{- with .Values.ejabberd.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "evergreen.fullname" . }}-ejabberd

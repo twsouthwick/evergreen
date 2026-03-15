@@ -1,0 +1,23 @@
+{
+  "name": "Evergreen ILS",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": ".devcontainer/post-create.sh",
+  "forwardPorts": [80, 7682],
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "tim-koehler.helm-intellisense",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "KUBECONFIG": "${containerWorkspaceFolder}/.kube/config"
+  }
+}

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "evergreen.fullname" . }}-memcached
+  labels:
+    {{- include "evergreen.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memcached
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "evergreen.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: memcached
+  template:
+    metadata:
+      labels:
+        {{- include "evergreen.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: memcached
+    spec:
+      containers:
+        - name: memcached
+          image: {{ include "evergreen.image" (dict "global" .Values.global "image" .Values.memcached.image) }}
+          imagePullPolicy: {{ .Values.memcached.image.pullPolicy }}
+          args:
+            - --conn-limit={{ .Values.memcached.maxConnections }}
+            - --memory-limit={{ .Values.memcached.maxMemory }}
+            - --threads={{ .Values.memcached.threads }}
+          ports:
+            - containerPort: 11211
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 11211
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          {{- with .Values.memcached.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

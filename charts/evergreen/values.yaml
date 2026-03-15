@@ -1,0 +1,91 @@
+global:
+  # Container registry prefix, e.g. myregistry.azurecr.io
+  imageRegistry: ""
+  imagePullSecrets: []
+
+postgresql:
+  image:
+    repository: tws-evergreen-pg
+    tag: latest
+    pullPolicy: IfNotPresent
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+  resources: {}
+
+dbInit:
+  image:
+    repository: tws-evergreen-pg-init
+    tag: latest
+    pullPolicy: IfNotPresent
+
+ejabberd:
+  image:
+    repository: ejabberd/ecs
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources: {}
+
+memcached:
+  image:
+    repository: memcached
+    tag: latest
+    pullPolicy: IfNotPresent
+  maxMemory: 64
+  maxConnections: 1024
+  threads: 4
+  resources: {}
+
+router:
+  image:
+    repository: tws-evergreen-router
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources: {}
+
+opensrf:
+  image:
+    repository: tws-evergreen-opensrf
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources: {}
+
+websocket:
+  image:
+    repository: tws-evergreen-opensrf-ws
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 7682
+  resources: {}
+
+web:
+  image:
+    repository: tws-evergreen-web
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  resources: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: evergreen.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+auth:
+  postgresUser: evergreen
+  postgresPassword: password
+  postgresDatabase: evergreen
+  postgresAdminUser: postgres
+  postgresAdminPassword: password
+  ejabberdPassword: password

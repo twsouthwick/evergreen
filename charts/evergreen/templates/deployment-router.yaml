@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "evergreen.fullname" . }}-router
+  labels:
+    {{- include "evergreen.labels" . | nindent 4 }}
+    app.kubernetes.io/component: router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "evergreen.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: router
+  template:
+    metadata:
+      labels:
+        {{- include "evergreen.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: router
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      hostname: opensrf.router
+      initContainers:
+        {{- include "evergreen.waitForEjabberd" . | nindent 8 }}
+      containers:
+        - name: router
+          image: {{ include "evergreen.image" (dict "global" .Values.global "image" .Values.router.image) }}
+          imagePullPolicy: {{ .Values.router.image.pullPolicy }}
+          readinessProbe:
+            exec:
+              command: ['test', '-f', '/openils/started']
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- with .Values.router.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
